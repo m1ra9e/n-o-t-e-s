@@ -22,7 +22,7 @@ public final class DataHandler {
         Supplier<Double> generateRandomDouble = () -> ThreadLocalRandom
                 .current().nextDouble(min, max);
 
-        double[] data = new double[7];
+        var data = new double[7];
         for (int i = 0; i < 7; i++) {
             data[i] = generateRandomDouble.get();
         }
