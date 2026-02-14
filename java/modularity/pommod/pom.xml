@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://maven.apache.org/POM/4.0.0 
+    https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>pommod</groupId>
+    <artifactId>pommod</artifactId>
+    <version>${revision}</version>
+
+    <packaging>pom</packaging>
+    
+    <name>pommod</name>
+    <description>An example of a modular Maven project.</description>
+    <url>https://github.com/m1ra9e/n-o-t-e-s/tree/main/java/modularity/pommod</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>m1ra9e</id>
+            <name>Lenar Shamsutdinov</name>
+            <email>some@mail.com</email>
+            <organization>SOME ORGANIZATION, LLC</organization>
+            <organizationUrl>https://m1ra9e.github.io/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/m1ra9e/n-o-t-e-s.git</connection>
+        <developerConnection>scm:git:git@github.com:m1ra9e/n-o-t-e-s.git</developerConnection>
+        <url>https://github.com/m1ra9e/n-o-t-e-s</url>
+    </scm>
+
+    <modules>
+        <module>pommod.app</module>
+        <module>pommod.core</module>
+        <module>pommod.cli</module>
+        <module>pommod.gui</module>
+    </modules>
+
+    <properties>
+        <revision>1.0.0</revision>
+        <java.version>17</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <log4j.version>2.25.3</log4j.version>
+        <junit.version>5.14.2</junit.version>
+
+        <mavenJarPlugin.version>3.4.1</mavenJarPlugin.version>
+        <mavenCompilerPlugin.version>3.14.1</mavenCompilerPlugin.version>
+        <mavenSurefirePlugin.version>3.5.4</mavenSurefirePlugin.version>
+        <mavenAssemblyPlugin.version>3.7.1</mavenAssemblyPlugin.version>
+    </properties>
+
+</project>
