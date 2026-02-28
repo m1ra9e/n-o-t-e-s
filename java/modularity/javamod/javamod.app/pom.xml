@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://maven.apache.org/POM/4.0.0 
+    https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>javamod</groupId>
+        <artifactId>javamod</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>javamod.module</groupId>
+    <artifactId>javamod.app</artifactId>
+
+    <packaging>jar</packaging>
+
+    <name>javamod-app</name>
+
+    <properties>
+        <appDirName>app-dir</appDirName>
+        <launcherName>run-app</launcherName>
+        <launcherGuiName>run-app-gui</launcherGuiName>
+        <moduleName>javamod.app</moduleName>
+        <mainClass>javamod.app.Main</mainClass>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>javamod.module</groupId>
+            <artifactId>javamod.cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javamod.module</groupId>
+            <artifactId>javamod.gui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${mavenJarPlugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.3.0.Final</version>
+                <executions>
+                    <execution>
+                        <id>add-module-infos</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/modules</outputDirectory>
+                            <modules>
+                                <module>
+                                    <artifact>
+                                        <groupId>org.jcommander</groupId>
+                                        <artifactId>jcommander</artifactId>
+                                        <version>3.0</version>
+                                    </artifact>
+                                    <moduleInfoSource>
+                                        module jcommander {
+                                            exports com.beust.jcommander;
+                                            exports com.beust.jcommander.converters;
+                                        }
+                                    </moduleInfoSource>
+                                </module>
+                                <module>
+                                    <artifact>
+                                        <groupId>org.apache.commons</groupId>
+                                        <artifactId>commons-math3</artifactId>
+                                        <version>3.6.1</version>
+                                    </artifact>
+                                    <moduleInfoSource>
+                                        module commons.math3 {
+                                            exports org.apache.commons.math3;
+                                            exports org.apache.commons.math3.linear;
+                                            exports org.apache.commons.math3.random;
+                                            exports org.apache.commons.math3.stat;
+                                            exports org.apache.commons.math3.stat.descriptive; 
+                                            exports org.apache.commons.math3.util;
+                                        }
+                                    </moduleInfoSource>
+                                </module>
+                            </modules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jlink-plugin</artifactId>
+                <version>3.1.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>create-runtime-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jlink</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <classifier>jlink</classifier>
+                    <outputDirectory>${project.build.directory}/${appDirName}</outputDirectory>
+                    <launcher>${launcherName}=${moduleName}/${mainClass}</launcher>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <stripDebug>true</stripDebug>
+                    <modulePaths>
+                        <modulePath>${project.build.directory}/modules</modulePath>
+                        <modulePath>${project.build.directory}/${project.build.finalName}.jar</modulePath>
+                        <modulePath>../javamod.cli/target</modulePath>
+                        <modulePath>../javamod.gui/target</modulePath>
+                        <modulePath>../javamod.core/target</modulePath>
+                    </modulePaths>
+                    <addModules>
+                        <addModule>${moduleName}</addModule>
+                        <addModule>java.management</addModule>
+                        <addModule>java.naming</addModule>
+                    </addModules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-jlink-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Unpacking JLink image to ${appDirName}..."/>
+                                <unzip src="${project.build.directory}/${project.build.finalName}-jlink.zip" 
+                                       dest="${project.build.directory}/${appDirName}"/>
+                                <chmod file="${project.build.directory}/${appDirName}/bin/${launcherName}" perm="755"/>
+                                
+                                <echo file="${project.build.directory}/${appDirName}/bin/${launcherGuiName}.bat">
+                                    @echo off
+                                    set DIR=%~dp0
+                                    start "" "%DIR%\javaw.exe" -m javamod.app/javamod.app.Main %*
+                                </echo>
+                                
+                                <echo message="Updating ZIP archive with GUI launcher..."/>
+                                <zip destfile="${project.build.directory}/${project.build.finalName}-jlink.zip" update="true">
+                                    <fileset dir="${project.build.directory}/${appDirName}">
+                                        <include name="bin/${launcherGuiName}.bat"/>
+                                    </fileset>
+                                </zip>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
