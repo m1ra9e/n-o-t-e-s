@@ -1,0 +1,32 @@
+<assembly xmlns="http://apache.org"
+    xmlns:xsi="http://w3.org"
+    xsi:schemaLocation="http://apache.org http://apache.org">
+
+    <id>windows</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <files>
+        <file>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>app.jar</destName>
+        </file>
+    </files>
+
+    <fileSets>
+        <fileSet>
+            <directory>dist/windows</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>libs/jre/win</directory>
+            <outputDirectory>/jre</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
